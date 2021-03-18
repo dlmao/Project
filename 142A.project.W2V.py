@@ -3,7 +3,6 @@
 import numpy as np
 import pandas as pd
 
-import tensorflow as tf
 from tensorflow import keras, reduce_mean, square
 from tensorflow.keras import layers
 from tensorflow.keras.preprocessing import text, sequence
