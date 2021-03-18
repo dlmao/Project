@@ -42,8 +42,8 @@ def clean_text(text):
     text =  ' '.join(word for word in text.split() if word not in STOPWORDS) # deletes stopwords
     return text # returns cleaner comment_text
 
-# print(len(train['comment_text'][3645])) # lenght was 4424
-# print(len(clean_text(train['comment_text'][3645]))) # after cleaning it the length was 2783
+print(len(train['comment_text'][3645])) # lenght was 4424
+print(len(clean_text(train['comment_text'][3645]))) # after cleaning it the length was 2783
 train['comment_text'] = train['comment_text'].apply(clean_text)
 
 # The maximum number of words that will be used for tokenizing. (most frequent words)
@@ -76,7 +76,8 @@ x_test = sequence.pad_sequences(x_test, maxlen=MAX_SEQ_LEN)
 y_test = test[classes_list].to_numpy()
 
 # wv = gensim.models.KeyedVectors.load_word2vec_format("GoogleNews-vectors-negative300.bin.gz", binary=True)
-wv = gensim.models.KeyedVectors.load_word2vec_format("https://s3.amazonaws.com/dl4j-distribution/GoogleNews-vectors-negative300.bin.gz", binary=True)
+wv = gensim.models.KeyedVectors.load_word2vec_format("https://s3.amazonaws.com/dl4j-distribution/GoogleNews-vectors-negative300.bin.gz",
+                                                     binary=True)
 
 # word 2 vec implementation
 def word_averaging(wv, words):
@@ -104,8 +105,6 @@ def word_averaging_list(wv, text_list):
 x_train_word_avg = word_averaging_list(wv, x_train)
 x_test_word_avg = word_averaging_list(wv, x_test)
 
-# loss function for model
-
 # recurrent neural network model
 rnn_model = keras.Sequential()
 rnn_model.add(layers.Embedding(MAX_NUM_WORDS, 300, input_length=1)) # must be 300 b/c of google model
@@ -117,8 +116,9 @@ rnn_model.compile(loss='binary_crossentropy', optimizer='adam',
 
 epochs = 2
 batch_size = 512
-history = rnn_model.fit(x_train_word_avg, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.1,
-                        callbacks=[keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, min_delta=0.0001)])
+history = rnn_model.fit(x_train_word_avg, y_train, epochs=epochs, batch_size=batch_size,
+                        validation_split=0.1, callbacks=[keras.callbacks.EarlyStopping(monitor='val_loss', patience=3,
+                                                                                       min_delta=0.0001)])
 
 print(rnn_model.evaluate(x_test_word_avg, y_test))
 # loss function binary_crossentropy gave me 96.38 % accuracy
